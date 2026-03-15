@@ -1,1 +1,117 @@
-<p>wallet-dashboard works!</p>
+<main class="dashboard">
+  <header class="dashboard__header">
+    <h1 class="dashboard__title">Мультичейн кошелёк</h1>
+  </header>
+
+  <app-wallet-address-form (submitForm)="onFormSubmit($event)" />
+
+  @if (showResults$ | async) {
+    <section class="dashboard__portfolio card" aria-labelledby="portfolio-heading">
+      <h2 id="portfolio-heading" class="card__title">Портфолио</h2>
+
+      @if (portfolioState$ | async; as state) {
+        @if (state.state === 'loading') {
+          <div class="loading" aria-busy="true">
+            <div class="spinner" aria-hidden="true"></div>
+            <p>Загрузка портфолио…</p>
+          </div>
+        }
+        @if (state.state === 'error') {
+          <div class="error-message" role="alert">
+            {{ state.message }}
+          </div>
+        }
+        @if (state.state === 'loaded' && state.data) {
+          <div class="portfolio">
+            <div class="portfolio__native">
+              <h3 class="portfolio__subtitle">Нативный баланс</h3>
+              <p class="portfolio__balance">
+                {{ formatBalance(state.data.nativeBalance.rawBalance, state.data.nativeBalance.decimals) }}
+                {{ state.data.nativeBalance.symbol }}
+              </p>
+              <p class="portfolio__usd">{{ formatUsd(state.data.nativeBalance.usdValue) }}</p>
+            </div>
+
+            @if (state.data.tokens && state.data.tokens.length > 0) {
+              <div class="portfolio__tokens">
+                <h3 class="portfolio__subtitle">Токены</h3>
+                <div class="table-wrap">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th scope="col">Символ</th>
+                        <th scope="col">Баланс</th>
+                        <th scope="col">USD</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (token of state.data.tokens; track token.address) {
+                        <tr>
+                          <td>{{ token.symbol }}</td>
+                          <td>{{ formatBalance(token.rawBalance, token.decimals) }}</td>
+                          <td>{{ formatUsd(token.usdValue) }}</td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            }
+
+            <p class="portfolio__total">
+              <strong>Общая стоимость:</strong> {{ formatUsd(state.data.totalUsdValue) }}
+            </p>
+          </div>
+        }
+      }
+    </section>
+
+    <section class="dashboard__transactions card" aria-labelledby="tx-heading">
+      <h2 id="tx-heading" class="card__title">История транзакций</h2>
+
+      @if (transactionsState$ | async; as txState) {
+        @if (txState.state === 'loading') {
+          <div class="loading" aria-busy="true">
+            <div class="spinner" aria-hidden="true"></div>
+            <p>Загрузка транзакций…</p>
+          </div>
+        }
+        @if (txState.state === 'error') {
+          <div class="error-message" role="alert">
+            {{ txState.message }}
+          </div>
+        }
+        @if (txState.state === 'loaded') {
+          @if (txState.data.length === 0) {
+            <p class="empty-message">Транзакций не найдено</p>
+          } @else {
+            <div class="table-wrap">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Хеш</th>
+                    <th scope="col">От</th>
+                    <th scope="col">Кому</th>
+                    <th scope="col">Сумма</th>
+                    <th scope="col">Дата</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (tx of txState.data; track tx.hash) {
+                    <tr>
+                      <td class="mono">{{ shortHash(tx.hash) }}</td>
+                      <td class="mono">{{ shortHash(tx.from) }}</td>
+                      <td class="mono">{{ shortHash(tx.to) }}</td>
+                      <td>{{ tx.value }} {{ tx.symbol }}</td>
+                      <td>{{ formatTxDate(tx.timestamp) }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        }
+      }
+    </section>
+  }
+</main>

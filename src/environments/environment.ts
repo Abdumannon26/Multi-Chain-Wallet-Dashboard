@@ -1,6 +1,6 @@
 /**
  * Environment configuration for development
- * Pharma Control API Base URL
+ * Backend API base URL (includes /api prefix)
  */
 export const environment = {
   production: false,

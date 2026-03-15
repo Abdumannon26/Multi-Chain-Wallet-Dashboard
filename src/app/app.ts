@@ -1,9 +1,10 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import {WalletDashboardComponent} from './features/wallet-dashboard/wallet-dashboard.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, WalletDashboardComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
