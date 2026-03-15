@@ -13,15 +13,10 @@ import { TransactionService } from '../../core/services/transaction.service';
 import { Portfolio } from '../../shared/models/portfolio.model';
 import { Transaction } from '../../shared/models/transaction.model';
 import { WalletAddressFormComponent, WalletFormValue } from './wallet-address-form/wallet-address-form.component';
-import {
-  formatBalance as formatBalanceUtil,
-  formatUsd as formatUsdUtil,
-} from '../../shared/utils/balance.util';
+import { TransactionListComponent } from './transaction-list/transaction-list.component';
+import { FormatBalancePipe } from '../../shared/pipes/format-balance.pipe';
+import { FormatUsdPipe } from '../../shared/pipes/format-usd.pipe';
 import { CommonModule } from '@angular/common';
-import {
-  formatTxDate as formatTxDateUtil,
-  shortHash as shortHashUtil,
-} from '../../shared/utils/format.util';
 
 export type PortfolioState =
   | { state: 'idle' }
@@ -37,7 +32,13 @@ export type TransactionsState =
 
 @Component({
   selector: 'app-wallet-dashboard',
-  imports: [CommonModule, WalletAddressFormComponent],
+  imports: [
+    CommonModule,
+    WalletAddressFormComponent,
+    TransactionListComponent,
+    FormatBalancePipe,
+    FormatUsdPipe,
+  ],
   templateUrl: './wallet-dashboard.component.html',
   styleUrl: './wallet-dashboard.component.scss',
   providers: [PortfolioService, TransactionService],
@@ -103,21 +104,5 @@ export class WalletDashboardComponent {
   onFormSubmit(value: WalletFormValue): void {
     this.address$.next(value.address.trim());
     this.chain$.next(value.chainId);
-  }
-
-  formatBalance(rawBalance: string, decimals: number): string {
-    return formatBalanceUtil(rawBalance, decimals);
-  }
-
-  formatUsd(value: number): string {
-    return formatUsdUtil(value);
-  }
-
-  shortHash(hash: string): string {
-    return shortHashUtil(hash);
-  }
-
-  formatTxDate(timestamp: number): string {
-    return formatTxDateUtil(timestamp);
   }
 }

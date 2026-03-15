@@ -11,9 +11,40 @@
 
       @if (portfolioState$ | async; as state) {
         @if (state.state === 'loading') {
-          <div class="loading" aria-busy="true">
-            <div class="spinner" aria-hidden="true"></div>
-            <p>Загрузка портфолио…</p>
+          <div class="loading-skeleton" aria-busy="true" aria-live="polite">
+            <div class="loading-skeleton__spinner">
+              <div class="spinner" aria-hidden="true"></div>
+              <span class="loading-skeleton__label">Загрузка портфолио…</span>
+            </div>
+            <div class="portfolio-skeleton">
+              <div class="portfolio-skeleton__native">
+                <div class="skeleton skeleton-title"></div>
+                <div class="skeleton skeleton-balance skeleton-block"></div>
+                <div class="skeleton skeleton-usd skeleton-block"></div>
+              </div>
+              <div class="portfolio-skeleton__tokens">
+                <div class="skeleton skeleton-title" style="width: 30%"></div>
+                <table class="table-skeleton">
+                  <thead>
+                    <tr>
+                      <th>Символ</th>
+                      <th>Баланс</th>
+                      <th>USD</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (i of [1,2,3]; track i) {
+                      <tr>
+                        <td><span class="skeleton skeleton-cell"></span></td>
+                        <td><span class="skeleton skeleton-cell"></span></td>
+                        <td><span class="skeleton skeleton-cell"></span></td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+              <div class="skeleton portfolio-skeleton__total"></div>
+            </div>
           </div>
         }
         @if (state.state === 'error') {
@@ -26,10 +57,10 @@
             <div class="portfolio__native">
               <h3 class="portfolio__subtitle">Нативный баланс</h3>
               <p class="portfolio__balance">
-                {{ formatBalance(state.data.nativeBalance.rawBalance, state.data.nativeBalance.decimals) }}
+                {{ state.data.nativeBalance.rawBalance | formatBalance:state.data.nativeBalance.decimals }}
                 {{ state.data.nativeBalance.symbol }}
               </p>
-              <p class="portfolio__usd">{{ formatUsd(state.data.nativeBalance.usdValue) }}</p>
+              <p class="portfolio__usd">{{ state.data.nativeBalance.usdValue | formatUsd }}</p>
             </div>
 
             @if (state.data.tokens && state.data.tokens.length > 0) {
@@ -48,8 +79,8 @@
                       @for (token of state.data.tokens; track token.address) {
                         <tr>
                           <td>{{ token.symbol }}</td>
-                          <td>{{ formatBalance(token.rawBalance, token.decimals) }}</td>
-                          <td>{{ formatUsd(token.usdValue) }}</td>
+                          <td>{{ token.rawBalance | formatBalance:token.decimals }}</td>
+                          <td>{{ token.usdValue | formatUsd }}</td>
                         </tr>
                       }
                     </tbody>
@@ -59,59 +90,13 @@
             }
 
             <p class="portfolio__total">
-              <strong>Общая стоимость:</strong> {{ formatUsd(state.data.totalUsdValue) }}
+              <strong>Общая стоимость:</strong> {{ state.data.totalUsdValue | formatUsd }}
             </p>
           </div>
         }
       }
     </section>
 
-    <section class="dashboard__transactions card" aria-labelledby="tx-heading">
-      <h2 id="tx-heading" class="card__title">История транзакций</h2>
-
-      @if (transactionsState$ | async; as txState) {
-        @if (txState.state === 'loading') {
-          <div class="loading" aria-busy="true">
-            <div class="spinner" aria-hidden="true"></div>
-            <p>Загрузка транзакций…</p>
-          </div>
-        }
-        @if (txState.state === 'error') {
-          <div class="error-message" role="alert">
-            {{ txState.message }}
-          </div>
-        }
-        @if (txState.state === 'loaded') {
-          @if (txState.data.length === 0) {
-            <p class="empty-message">Транзакций не найдено</p>
-          } @else {
-            <div class="table-wrap">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th scope="col">Хеш</th>
-                    <th scope="col">От</th>
-                    <th scope="col">Кому</th>
-                    <th scope="col">Сумма</th>
-                    <th scope="col">Дата</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @for (tx of txState.data; track tx.hash) {
-                    <tr>
-                      <td class="mono">{{ shortHash(tx.hash) }}</td>
-                      <td class="mono">{{ shortHash(tx.from) }}</td>
-                      <td class="mono">{{ shortHash(tx.to) }}</td>
-                      <td>{{ tx.value }} {{ tx.symbol }}</td>
-                      <td>{{ formatTxDate(tx.timestamp) }}</td>
-                    </tr>
-                  }
-                </tbody>
-              </table>
-            </div>
-          }
-        }
-      }
-    </section>
+    <app-transaction-list [state$]="transactionsState$" />
   }
 </main>
