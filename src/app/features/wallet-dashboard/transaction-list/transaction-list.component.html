@@ -1,0 +1,71 @@
+<section class="tx-list card" aria-labelledby="tx-heading">
+  <h2 id="tx-heading" class="card__title">История транзакций</h2>
+
+  @if (state$() | async; as txState) {
+    @if (txState.state === 'loading') {
+      <div class="loading-skeleton" aria-busy="true" aria-live="polite">
+        <div class="loading-skeleton__spinner">
+          <div class="spinner" aria-hidden="true"></div>
+          <span class="loading-skeleton__label">Загрузка транзакций…</span>
+        </div>
+        <table class="table-skeleton">
+          <thead>
+            <tr>
+              <th>Хеш</th>
+              <th>От</th>
+              <th>Кому</th>
+              <th>Сумма</th>
+              <th>Дата</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (i of [1,2,3,4,5]; track i) {
+              <tr>
+                <td><span class="skeleton skeleton-cell"></span></td>
+                <td><span class="skeleton skeleton-cell"></span></td>
+                <td><span class="skeleton skeleton-cell"></span></td>
+                <td><span class="skeleton skeleton-cell"></span></td>
+                <td><span class="skeleton skeleton-cell"></span></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+    @if (txState.state === 'error') {
+      <div class="error-message" role="alert">
+        {{ txState.message }}
+      </div>
+    }
+    @if (txState.state === 'loaded') {
+      @if (txState.data.length === 0) {
+        <p class="empty-message">Транзакций не найдено</p>
+      } @else {
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Хеш</th>
+                <th scope="col">От</th>
+                <th scope="col">Кому</th>
+                <th scope="col">Сумма</th>
+                <th scope="col">Дата</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (tx of txState.data; track tx.hash) {
+                <tr>
+                  <td class="mono">{{ shortHash(tx.hash) }}</td>
+                  <td class="mono">{{ shortHash(tx.from) }}</td>
+                  <td class="mono">{{ shortHash(tx.to) }}</td>
+                  <td>{{ tx.value }} {{ tx.symbol }}</td>
+                  <td>{{ formatTxDate(tx.timestamp) }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    }
+  }
+</section>
