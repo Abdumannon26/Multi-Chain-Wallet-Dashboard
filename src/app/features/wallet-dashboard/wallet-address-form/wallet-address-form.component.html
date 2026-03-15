@@ -1,0 +1,50 @@
+<section class="form-section" aria-labelledby="form-heading">
+  <h2 id="form-heading" class="visually-hidden">Ввод данных</h2>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-grid">
+    <mat-form-field appearance="outline" class="form-field form-field--chain">
+      <mat-label>Сеть</mat-label>
+      <mat-select formControlName="chainId" aria-label="Выбор блокчейн-сети">
+        @for (chain of chains(); track chain.id) {
+          <mat-option [value]="chain.id">
+            {{ chain.name }} ({{ chain.nativeCurrency.symbol }})
+          </mat-option>
+        }
+        @if (chains().length === 0) {
+          <mat-option disabled>Загрузка сетей…</mat-option>
+        }
+      </mat-select>
+      @if (form.controls.chainId.invalid && form.controls.chainId.touched) {
+        <mat-error>Выберите сеть</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="form-field form-field--address">
+      <mat-label>Адрес кошелька</mat-label>
+      <input
+        matInput
+        formControlName="address"
+        placeholder="0x… или Solana-адрес"
+        aria-label="Адрес кошелька"
+        autocomplete="off"
+      />
+      @if (form.controls.address.invalid && form.controls.address.touched) {
+        <mat-error>
+          {{ form.controls.address.hasError('invalidAddress') ? form.controls.address.getError('invalidAddress') : 'Введите адрес кошелька' }}
+        </mat-error>
+      }
+    </mat-form-field>
+
+    <div class="form-field form-field--button">
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        [disabled]="chains().length === 0"
+        aria-label="Показать баланс"
+      >
+        Показать баланс
+      </button>
+    </div>
+  </form>
+</section>

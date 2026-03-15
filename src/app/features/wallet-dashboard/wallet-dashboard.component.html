@@ -1,0 +1,78 @@
+<main class="dashboard">
+  <header class="dashboard__header">
+    <h1 class="dashboard__title">Мультичейн кошелёк</h1>
+  </header>
+
+  <mat-card class="dashboard__form-card">
+    <app-wallet-address-form (submitForm)="onFormSubmit($event)" />
+  </mat-card>
+
+  @if (showResults$ | async) {
+    <section aria-labelledby="portfolio-heading" class="dashboard__section">
+      <mat-card class="dashboard__portfolio-card">
+        <mat-card-header>
+          <mat-card-title id="portfolio-heading">Портфолио</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          @if (portfolioState$ | async; as state) {
+            @if (state.state === 'loading') {
+              <div class="loading-box" aria-busy="true" aria-live="polite" @loadingFade>
+                <mat-spinner diameter="40" aria-hidden="true"></mat-spinner>
+                <p class="loading-label">Загрузка портфолио…</p>
+              </div>
+            }
+            @if (state.state === 'error') {
+              <div class="error-box" role="alert" @contentFade>
+                <p class="error-text">{{ state.message }}</p>
+              </div>
+            }
+            @if (state.state === 'loaded' && state.data) {
+              <article class="portfolio" @contentFade>
+                <section class="portfolio__native" aria-labelledby="native-balance-label">
+                  <h3 id="native-balance-label" class="portfolio__subtitle">Нативный баланс</h3>
+                <p class="portfolio__balance">
+                  {{ state.data.nativeBalance.rawBalance | formatBalance:state.data.nativeBalance.decimals }}
+                  {{ state.data.nativeBalance.symbol }}
+                </p>
+                <p class="portfolio__usd">{{ state.data.nativeBalance.usdValue | formatUsd }}</p>
+              </section>
+
+              @if (state.data.tokens && state.data.tokens.length > 0) {
+                <section class="portfolio__tokens" aria-labelledby="tokens-label">
+                  <h3 id="tokens-label" class="portfolio__subtitle">Токены</h3>
+                  <div class="table-scroll" role="region" aria-label="Таблица токенов">
+                  <table mat-table [dataSource]="state.data.tokens" class="portfolio-table">
+                    <ng-container matColumnDef="symbol">
+                      <th mat-header-cell *matHeaderCellDef>Символ</th>
+                      <td mat-cell *matCellDef="let token">{{ token.symbol }}</td>
+                    </ng-container>
+                    <ng-container matColumnDef="balance">
+                      <th mat-header-cell *matHeaderCellDef>Баланс</th>
+                      <td mat-cell *matCellDef="let token">{{ token.rawBalance | formatBalance:token.decimals }}</td>
+                    </ng-container>
+                    <ng-container matColumnDef="usd">
+                      <th mat-header-cell *matHeaderCellDef>USD</th>
+                      <td mat-cell *matCellDef="let token">{{ token.usdValue | formatUsd }}</td>
+                    </ng-container>
+                    <tr mat-header-row *matHeaderRowDef="['symbol', 'balance', 'usd']"></tr>
+                    <tr mat-row *matRowDef="let row; columns: ['symbol', 'balance', 'usd']"></tr>
+                  </table>
+                  </div>
+                </section>
+              }
+
+              <p class="portfolio__total">
+                <strong>Общая стоимость:</strong> {{ state.data.totalUsdValue | formatUsd }}
+              </p>
+              </article>
+            }
+          }
+        </mat-card-content>
+      </mat-card>
+    </section>
+
+    <section aria-labelledby="tx-heading" class="dashboard__section">
+      <app-transaction-list [state$]="transactionsState$" />
+    </section>
+  }
+</main>
