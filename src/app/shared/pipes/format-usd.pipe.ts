@@ -1,10 +1,4 @@
 import { Pipe, PipeTransform } from '@angular/core';
-
-/**
- * Formats a number as USD with 2 decimals (e.g. $1,234.56).
- *
- * Usage: {{ value | formatUsd }}
- */
 @Pipe({
   name: 'formatUsd',
   standalone: true,

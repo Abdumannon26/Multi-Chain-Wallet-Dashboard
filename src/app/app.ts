@@ -4,7 +4,7 @@ import {WalletDashboardComponent} from './features/wallet-dashboard/wallet-dashb
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, WalletDashboardComponent],
+  imports: [WalletDashboardComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })

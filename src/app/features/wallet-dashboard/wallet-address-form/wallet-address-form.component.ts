@@ -8,6 +8,10 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { ChainService } from '../../../core/services/chain.service';
 import { Chain } from '../../../shared/models/chain.model';
 import { validateAddress } from '../../../shared/utils/address.util';
@@ -20,11 +24,17 @@ export interface WalletFormValue {
 @Component({
   selector: 'app-wallet-address-form',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonModule,
+  ],
+  providers: [ChainService],
   templateUrl: './wallet-address-form.component.html',
   styleUrl: './wallet-address-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [ChainService],
 })
 export class WalletAddressFormComponent {
   private destroyRef = inject(DestroyRef);

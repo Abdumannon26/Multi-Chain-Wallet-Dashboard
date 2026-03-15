@@ -6,9 +6,9 @@ import { environment } from '../../../environments/environment';
 
 @Injectable()
 export class TransactionService {
-  private apiUrl = environment.apiUrl;
+  private readonly apiUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   getTransactions(address: string, chain: string, limit = 10): Observable<Transaction[]> {
     return this.http.get<Transaction[]>(`${this.apiUrl}/transactions/${address}`, {

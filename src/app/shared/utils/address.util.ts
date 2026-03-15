@@ -1,13 +1,8 @@
-/**
- * Basic EVM address validation: must start with 0x and have 42 characters (0x + 40 hex).
- */
 export function isValidEvmAddress(address: string): boolean {
   return /^0x[a-fA-F0-9]{40}$/.test(address.trim());
 }
 
-/**
- * Basic Solana address validation: base58, typically 32–44 characters.
- */
+
 export function isValidSolanaAddress(address: string): boolean {
   const trimmed = address.trim();
   if (trimmed.length < 32 || trimmed.length > 44) return false;

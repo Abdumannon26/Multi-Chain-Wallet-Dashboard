@@ -6,9 +6,9 @@ import { environment } from '../../../environments/environment';
 
 @Injectable()
 export class PortfolioService {
-  private apiUrl = environment.apiUrl;
+  private readonly apiUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   getPortfolio(chain: string, address: string): Observable<Portfolio> {
     return this.http.get<Portfolio>(`${this.apiUrl}/portfolio/${address}`, {

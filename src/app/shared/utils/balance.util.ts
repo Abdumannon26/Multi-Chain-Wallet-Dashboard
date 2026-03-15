@@ -1,7 +1,3 @@
-/**
- * Converts raw units (e.g. wei) into a readable balance string with max 6 decimals.
- * Uses BigInt to avoid precision loss.
- */
 export function formatBalance(rawBalance: string, decimals: number): string {
   const raw = BigInt(rawBalance);
   const divisor = BigInt(10 ** decimals);
@@ -18,9 +14,6 @@ export function formatBalance(rawBalance: string, decimals: number): string {
   }).format(parseFloat(trimmed));
 }
 
-/**
- * Formats a number as USD with 2 decimals using Intl.NumberFormat.
- */
 export function formatUsd(value: number): string {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',

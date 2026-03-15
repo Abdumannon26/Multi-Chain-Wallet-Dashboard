@@ -1,11 +1,4 @@
 import { Pipe, PipeTransform } from '@angular/core';
-
-/**
- * Converts raw units (wei, lamports, etc.) to a readable balance string.
- * Uses BigInt to avoid precision loss. Max 6 decimals, thousands separator.
- *
- * Usage: {{ rawBalance | formatBalance:decimals }}
- */
 @Pipe({
   name: 'formatBalance',
   standalone: true,
